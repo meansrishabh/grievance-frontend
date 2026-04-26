@@ -1,0 +1,37 @@
+<aside class="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-line bg-white lg:block">
+  <div class="flex h-full flex-col">
+    <div class="flex h-20 items-center gap-3 border-b border-line px-6">
+      <div class="flex h-11 w-11 items-center justify-center rounded-md bg-gov-700 text-white">
+        <lucide-icon [img]="icons.shield" class="h-6 w-6"></lucide-icon>
+      </div>
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-wide text-gov-700">GovConnect</p>
+        <h1 class="text-base font-bold text-ink">Grievance System</h1>
+      </div>
+    </div>
+
+    <nav class="flex-1 space-y-1 px-4 py-5">
+      @for (item of navItems; track item.label) {
+        <button
+          class="flex h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-medium transition"
+          [class.bg-gov-50]="item.active"
+          [class.text-gov-700]="item.active"
+          [class.text-muted]="!item.active"
+          [class.hover:bg-slate-50]="!item.active"
+          [class.hover:text-ink]="!item.active"
+        >
+          <lucide-icon [img]="item.icon" class="h-5 w-5"></lucide-icon>
+          <span>{{ item.label }}</span>
+        </button>
+      }
+    </nav>
+
+    <div class="border-t border-line p-4">
+      <div class="rounded-md bg-slate-50 p-4">
+        <p class="text-xs font-semibold uppercase text-muted">IVR Hotline</p>
+        <p class="mt-1 text-lg font-bold text-ink">1800-102-7744</p>
+        <p class="mt-1 text-xs text-muted">Active call routing enabled</p>
+      </div>
+    </div>
+  </div>
+</aside>

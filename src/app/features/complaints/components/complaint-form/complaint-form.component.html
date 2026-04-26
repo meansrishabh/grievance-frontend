@@ -1,0 +1,84 @@
+<section class="rounded-md border border-line bg-white p-5 shadow-panel">
+  <div class="mb-5 flex items-center gap-3">
+    <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gov-50 text-gov-700">
+      <lucide-icon [img]="icons.create" class="h-5 w-5"></lucide-icon>
+    </div>
+    <div>
+      <h3 class="text-base font-bold text-ink">Register Complaint</h3>
+      <p class="text-sm text-muted">Manual entry for counter and operator teams</p>
+    </div>
+  </div>
+
+  <form class="space-y-4" [formGroup]="form" (ngSubmit)="submit()">
+    <label class="block">
+      <span class="mb-1.5 block text-sm font-medium text-ink">Citizen Name</span>
+      <input
+        formControlName="citizen"
+        placeholder="Enter citizen name"
+        class="h-10 w-full rounded-md border border-line bg-white px-3 text-sm text-ink outline-none transition placeholder:text-slate-400 focus:border-gov-500 focus:ring-2 focus:ring-gov-100"
+      />
+    </label>
+
+    <label class="block">
+      <span class="mb-1.5 block text-sm font-medium text-ink">Mobile Number</span>
+      <input
+        formControlName="mobile"
+        placeholder="+91 98765 43210"
+        class="h-10 w-full rounded-md border border-line bg-white px-3 text-sm text-ink outline-none transition placeholder:text-slate-400 focus:border-gov-500 focus:ring-2 focus:ring-gov-100"
+      />
+    </label>
+
+    <label class="block">
+      <span class="mb-1.5 block text-sm font-medium text-ink">Department</span>
+      <select formControlName="department" class="h-10 w-full rounded-md border border-line bg-white px-3 text-sm text-ink outline-none focus:border-gov-500 focus:ring-2 focus:ring-gov-100">
+        @for (department of departments; track department) {
+          <option [value]="department">{{ department }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="block">
+      <span class="mb-1.5 block text-sm font-medium text-ink">Complaint Details</span>
+      <textarea
+        rows="4"
+        formControlName="subject"
+        placeholder="Describe the issue reported by citizen"
+        class="w-full resize-none rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none placeholder:text-slate-400 focus:border-gov-500 focus:ring-2 focus:ring-gov-100"
+      ></textarea>
+    </label>
+
+    <div class="grid grid-cols-2 gap-3">
+      <label class="block">
+        <span class="mb-1.5 block text-sm font-medium text-ink">Priority</span>
+        <select formControlName="priority" class="h-10 w-full rounded-md border border-line bg-white px-3 text-sm text-ink outline-none focus:border-gov-500 focus:ring-2 focus:ring-gov-100">
+          <option>Medium</option>
+          <option>High</option>
+          <option>Low</option>
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="mb-1.5 block text-sm font-medium text-ink">Ward</span>
+        <input
+          formControlName="ward"
+          placeholder="Ward 12"
+          class="h-10 w-full rounded-md border border-line bg-white px-3 text-sm text-ink outline-none transition placeholder:text-slate-400 focus:border-gov-500 focus:ring-2 focus:ring-gov-100"
+        />
+      </label>
+    </div>
+
+    <label class="block">
+      <span class="mb-1.5 block text-sm font-medium text-ink">Assigned Officer</span>
+      <input
+        formControlName="assignedTo"
+        placeholder="Unassigned"
+        class="h-10 w-full rounded-md border border-line bg-white px-3 text-sm text-ink outline-none transition placeholder:text-slate-400 focus:border-gov-500 focus:ring-2 focus:ring-gov-100"
+      />
+    </label>
+
+    <app-ui-button type="submit" [disabled]="isSaving">
+      <lucide-icon [img]="icons.create" class="h-4 w-4"></lucide-icon>
+      {{ isSaving ? 'Submitting...' : 'Submit Complaint' }}
+    </app-ui-button>
+  </form>
+</section>

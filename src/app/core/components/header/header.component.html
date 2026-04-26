@@ -1,0 +1,35 @@
+<header class="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
+  <div class="flex h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <div class="flex min-w-0 items-center gap-3">
+      <button class="flex h-10 w-10 items-center justify-center rounded-md border border-line text-muted lg:hidden">
+        <lucide-icon [img]="icons.menu" class="h-5 w-5"></lucide-icon>
+      </button>
+      <div class="min-w-0">
+        <p class="text-sm font-medium text-muted">Admin Console</p>
+        <h2 class="truncate text-xl font-bold text-ink sm:text-2xl">Grievance Dashboard</h2>
+      </div>
+    </div>
+
+    <div class="hidden h-10 w-full max-w-sm items-center gap-2 rounded-md border border-line bg-slate-50 px-3 md:flex">
+      <lucide-icon [img]="icons.search" class="h-4 w-4 text-muted"></lucide-icon>
+      <input class="w-full bg-transparent text-sm outline-none placeholder:text-slate-400" placeholder="Search complaints, citizens, wards" />
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button class="hidden h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-sm font-medium text-muted sm:flex">
+        <lucide-icon [img]="icons.calendar" class="h-4 w-4"></lucide-icon>
+        25 Apr 2026
+      </button>
+      <button class="flex h-10 w-10 items-center justify-center rounded-md border border-line bg-white text-muted">
+        <lucide-icon [img]="icons.bell" class="h-5 w-5"></lucide-icon>
+      </button>
+      <div class="flex items-center gap-3 rounded-md border border-line bg-white py-1.5 pl-2 pr-3">
+        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-gov-700 text-sm font-bold text-white">AD</div>
+        <div class="hidden sm:block">
+          <p class="text-sm font-semibold text-ink">Admin Desk</p>
+          <p class="text-xs text-muted">State Nodal Officer</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

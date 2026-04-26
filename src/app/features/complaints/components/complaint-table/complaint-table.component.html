@@ -1,0 +1,103 @@
+<section class="overflow-hidden rounded-md border border-line bg-white shadow-panel">
+  <div class="flex items-center justify-between border-b border-line px-5 py-4">
+    <div>
+      <h3 class="text-base font-bold text-ink">Recent Complaints</h3>
+      <p class="mt-0.5 text-sm text-muted">Live queue across IVR, web, and helpdesk channels</p>
+    </div>
+    <button class="flex h-9 items-center gap-2 rounded-md border border-line bg-white px-3 text-sm font-semibold text-muted hover:bg-slate-50">
+      <lucide-icon [img]="icons.sort" class="h-4 w-4"></lucide-icon>
+      Sort
+    </button>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-[980px] w-full text-left">
+      <thead class="bg-slate-50 text-xs font-semibold uppercase text-muted">
+        <tr>
+          <th class="px-5 py-3">Complaint ID</th>
+          <th class="px-5 py-3">Citizen</th>
+          <th class="px-5 py-3">Department</th>
+          <th class="px-5 py-3">Subject</th>
+          <th class="px-5 py-3">Priority</th>
+          <th class="px-5 py-3">Status</th>
+          <th class="px-5 py-3">Assigned</th>
+          <th class="px-5 py-3 text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-line">
+        @if (isLoading) {
+          <tr>
+            <td colspan="8" class="px-5 py-10 text-center text-sm font-medium text-muted">
+              Loading complaints from backend...
+            </td>
+          </tr>
+        }
+
+        @if (!isLoading && complaints.length === 0) {
+          <tr>
+            <td colspan="8" class="px-5 py-10 text-center text-sm font-medium text-muted">
+              No complaints found for the selected filters.
+            </td>
+          </tr>
+        }
+
+        @for (complaint of complaints; track complaint.id) {
+          <tr class="bg-white hover:bg-slate-50/80">
+            <td class="px-5 py-4">
+              <div class="font-semibold text-gov-700">{{ complaint.id }}</div>
+              <div class="text-xs text-muted">{{ complaint.createdAt }} | {{ complaint.source }}</div>
+            </td>
+            <td class="px-5 py-4">
+              <div class="font-medium text-ink">{{ complaint.citizen }}</div>
+              <div class="text-xs text-muted">{{ complaint.mobile }}</div>
+            </td>
+            <td class="px-5 py-4 text-sm text-ink">{{ complaint.department }}</td>
+            <td class="max-w-xs px-5 py-4">
+              <div class="truncate text-sm font-medium text-ink">{{ complaint.subject }}</div>
+              <div class="text-xs text-muted">{{ complaint.ward }}</div>
+            </td>
+            <td class="px-5 py-4">
+              <span
+                class="rounded-full px-2.5 py-1 text-xs font-semibold ring-1"
+                [class.bg-red-50]="complaint.priority === 'High'"
+                [class.text-danger]="complaint.priority === 'High'"
+                [class.ring-red-200]="complaint.priority === 'High'"
+                [class.bg-amber-50]="complaint.priority === 'Medium'"
+                [class.text-warning]="complaint.priority === 'Medium'"
+                [class.ring-amber-200]="complaint.priority === 'Medium'"
+                [class.bg-slate-50]="complaint.priority === 'Low'"
+                [class.text-muted]="complaint.priority === 'Low'"
+                [class.ring-slate-200]="complaint.priority === 'Low'"
+              >
+                {{ complaint.priority }}
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <app-status-badge [status]="complaint.status"></app-status-badge>
+            </td>
+            <td class="px-5 py-4 text-sm text-ink">{{ complaint.assignedTo }}</td>
+            <td class="px-5 py-4">
+              <div class="flex items-center justify-end gap-2">
+                <select
+                  class="h-9 rounded-md border border-line bg-white px-2 text-xs font-semibold text-ink outline-none focus:border-gov-500 focus:ring-2 focus:ring-gov-100"
+                  [value]="complaint.status"
+                  (change)="updateStatus(complaint.id, $any($event.target).value)"
+                >
+                  @for (status of statuses; track status) {
+                    <option [value]="status">{{ status }}</option>
+                  }
+                </select>
+                <button class="flex h-9 w-9 items-center justify-center rounded-md text-muted hover:bg-gov-50 hover:text-gov-700">
+                  <lucide-icon [img]="icons.view" class="h-4 w-4"></lucide-icon>
+                </button>
+                <button class="flex h-9 w-9 items-center justify-center rounded-md text-muted hover:bg-gov-50 hover:text-gov-700">
+                  <lucide-icon [img]="icons.more" class="h-4 w-4"></lucide-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

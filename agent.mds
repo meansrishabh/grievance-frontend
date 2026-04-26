@@ -1,0 +1,33 @@
+# Frontend Agent Notes
+
+This is an Angular 21 frontend, not a React runtime. A React/Vite reference UI exists under `Grievance Management System UI`; use it only as visual/product reference when improving Angular screens.
+
+## Architecture
+
+- App shell: `src/app/app.component.*`
+- Routes: `src/app/app.routes.ts`
+- Dashboard: `src/app/features/dashboard`
+- Complaint components and API code: `src/app/features/complaints`
+- Shared UI primitives: `src/app/shared/components`
+- Styling: Tailwind CSS in `src/styles.css` and `tailwind.config.js`
+
+## Backend Integration
+
+The frontend talks to the local NestJS backend at `http://localhost:3000`.
+
+Primary endpoints:
+
+- `GET /complaints`
+- `POST /complaints`
+- `PATCH /complaints/:id`
+- `DELETE /complaints/:id`
+
+The Angular service is `src/app/features/complaints/data/complaints.service.ts`. Keep frontend types in `complaint.model.ts` aligned with backend DTOs and entities.
+
+## Working Rules
+
+- Use standalone Angular components and typed inputs/outputs.
+- Prefer reactive forms for forms that submit to the backend.
+- Keep Tailwind utility styling consistent with the existing government dashboard UI.
+- Do not edit files inside `Grievance Management System UI` unless intentionally updating the React reference.
+- Run `npm run build` before handing off frontend changes.
