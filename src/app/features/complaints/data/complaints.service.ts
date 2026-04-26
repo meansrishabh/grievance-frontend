@@ -32,12 +32,14 @@ export class ComplaintsService {
       params = params.set(key, search);
     }
 
-    return this.http
-      .get<BackendComplaint[]>(this.apiUrl, { params })
-      .pipe(
-        map((complaints) => complaints.filter((complaint) => this.isOnOrAfter(complaint.createdAt, filters.fromDate))),
-        map((complaints) => complaints.map((complaint) => this.toComplaint(complaint)))
-      );
+    return this.http.get<BackendComplaint[]>(this.apiUrl, { params }).pipe(
+      map((complaints) => complaints.filter((complaint) => this.isOnOrAfter(complaint.createdAt, filters.fromDate))),
+      map((complaints) => complaints.map((complaint) => this.toComplaint(complaint)))
+    );
+  }
+
+  findOne(id: string): Observable<Complaint> {
+    return this.http.get<BackendComplaint>(`${this.apiUrl}/${id}`).pipe(map((complaint) => this.toComplaint(complaint)));
   }
 
   create(payload: CreateComplaintPayload): Observable<Complaint> {
@@ -49,18 +51,22 @@ export class ComplaintsService {
   }
 
   private toComplaint(complaint: BackendComplaint): Complaint {
+    const createdAt = complaint.createdAt || new Date().toISOString();
+
     return {
-      id: complaint.complaintId,
-      citizen: complaint.citizen,
-      mobile: complaint.mobile,
-      department: complaint.department,
-      subject: complaint.subject,
-      ward: complaint.ward,
-      source: complaint.source,
-      priority: complaint.priority,
-      status: complaint.status,
-      createdAt: this.formatDate(complaint.createdAt),
-      assignedTo: complaint.assignedTo
+      id: complaint.complaintId || complaint._id || 'GRV-PENDING',
+      citizen: complaint.citizen || complaint.citizenName || 'Citizen',
+      mobile: complaint.mobile || complaint.phone || 'Not provided',
+      department: complaint.department || 'Grievance',
+      subject: complaint.subject || complaint.description || 'Complaint registered',
+      ward: complaint.ward || 'Unknown',
+      source: complaint.source || 'Web',
+      priority: complaint.priority || 'Medium',
+      status: complaint.status || 'Pending',
+      createdAt: this.formatDate(createdAt),
+      createdAtIso: createdAt,
+      assignedTo: complaint.assignedTo || 'Unassigned',
+      recordingUrl: complaint.recordingUrl
     };
   }
 
@@ -72,12 +78,12 @@ export class ComplaintsService {
     }).format(new Date(value));
   }
 
-  private isOnOrAfter(createdAt: string, fromDate?: string): boolean {
+  private isOnOrAfter(createdAt?: string, fromDate?: string): boolean {
     if (!fromDate) {
       return true;
     }
 
-    const complaintDate = new Date(createdAt);
+    const complaintDate = new Date(createdAt || new Date());
     const selectedDate = new Date(`${fromDate}T00:00:00`);
     return complaintDate >= selectedDate;
   }

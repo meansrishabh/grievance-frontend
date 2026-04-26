@@ -12,17 +12,15 @@
 
     <nav class="flex-1 space-y-1 px-4 py-5">
       @for (item of navItems; track item.label) {
-        <button
-          class="flex h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-medium transition"
-          [class.bg-gov-50]="item.active"
-          [class.text-gov-700]="item.active"
-          [class.text-muted]="!item.active"
-          [class.hover:bg-slate-50]="!item.active"
-          [class.hover:text-ink]="!item.active"
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="bg-gov-50 text-gov-700"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-medium text-muted transition hover:bg-slate-50 hover:text-ink"
         >
           <lucide-icon [img]="item.icon" class="h-5 w-5"></lucide-icon>
           <span>{{ item.label }}</span>
-        </button>
+        </a>
       }
     </nav>
 

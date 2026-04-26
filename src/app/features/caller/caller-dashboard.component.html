@@ -1,0 +1,91 @@
+<div class="space-y-6">
+  <section class="rounded-md border border-line bg-white p-6 shadow-panel">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-wide text-gov-700">Caller Desk</p>
+        <h2 class="mt-2 text-3xl font-bold text-ink">Today received calls</h2>
+        <p class="mt-2 text-sm text-muted">{{ today | date: 'dd MMM yyyy' }} IVR calls and tickets created from voice intake.</p>
+      </div>
+      <button class="h-10 rounded-md bg-gov-700 px-4 text-sm font-semibold text-white hover:bg-gov-900" type="button" (click)="loadCalls()">
+        Refresh
+      </button>
+    </div>
+  </section>
+
+  <section class="grid gap-4 md:grid-cols-3">
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-medium text-muted">Calls Received Today</p>
+        <lucide-icon [img]="icons.call" class="h-5 w-5 text-gov-700"></lucide-icon>
+      </div>
+      <p class="mt-3 text-3xl font-bold text-ink">{{ todayCalls.length }}</p>
+    </article>
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-medium text-muted">Tickets Created</p>
+        <lucide-icon [img]="icons.ticket" class="h-5 w-5 text-success"></lucide-icon>
+      </div>
+      <p class="mt-3 text-3xl font-bold text-ink">{{ ticketsCreatedToday }}</p>
+    </article>
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-medium text-muted">Pending From Calls</p>
+        <lucide-icon [img]="icons.headset" class="h-5 w-5 text-warning"></lucide-icon>
+      </div>
+      <p class="mt-3 text-3xl font-bold text-ink">{{ pendingToday }}</p>
+    </article>
+  </section>
+
+  @if (errorMessage) {
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-danger">{{ errorMessage }}</div>
+  }
+
+  <section class="overflow-hidden rounded-md border border-line bg-white shadow-panel">
+    <div class="border-b border-line px-5 py-4">
+      <h3 class="text-base font-bold text-ink">Call Tickets</h3>
+      <p class="mt-1 text-sm text-muted">Tickets created from IVR calls today</p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-[760px] w-full text-left">
+        <thead class="bg-slate-50 text-xs font-semibold uppercase text-muted">
+          <tr>
+            <th class="px-5 py-3">Ticket</th>
+            <th class="px-5 py-3">Caller Mobile</th>
+            <th class="px-5 py-3">Subject</th>
+            <th class="px-5 py-3">Status</th>
+            <th class="px-5 py-3">Recording</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          @if (isLoading) {
+            <tr>
+              <td colspan="5" class="px-5 py-10 text-center text-sm font-medium text-muted">Loading calls...</td>
+            </tr>
+          }
+
+          @if (!isLoading && todayCalls.length === 0) {
+            <tr>
+              <td colspan="5" class="px-5 py-10 text-center text-sm font-medium text-muted">No IVR calls received today.</td>
+            </tr>
+          }
+
+          @for (call of todayCalls; track call.id) {
+            <tr class="hover:bg-slate-50">
+              <td class="px-5 py-4 font-semibold text-gov-700">{{ call.id }}</td>
+              <td class="px-5 py-4 text-sm text-ink">{{ call.mobile }}</td>
+              <td class="px-5 py-4 text-sm text-ink">{{ call.subject }}</td>
+              <td class="px-5 py-4"><app-status-badge [status]="call.status"></app-status-badge></td>
+              <td class="px-5 py-4">
+                @if (call.recordingUrl) {
+                  <a class="text-sm font-semibold text-gov-700 hover:text-gov-900" [href]="call.recordingUrl" target="_blank" rel="noreferrer">Open</a>
+                } @else {
+                  <span class="text-sm text-muted">Not available</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

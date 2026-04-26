@@ -1,0 +1,93 @@
+<div class="space-y-6">
+  <section class="rounded-md border border-line bg-white p-6 shadow-panel">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-wide text-gov-700">Super Admin</p>
+        <h2 class="mt-2 text-3xl font-bold text-ink">Access control</h2>
+        <p class="mt-2 text-sm text-muted">Manage users, role access, and security policies for the grievance portal.</p>
+      </div>
+      <div class="flex h-16 w-16 items-center justify-center rounded-md bg-gov-50 text-gov-700">
+        <lucide-icon [img]="icons.shield" class="h-8 w-8"></lucide-icon>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid gap-4 md:grid-cols-3">
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <lucide-icon [img]="icons.key" class="h-5 w-5 text-gov-700"></lucide-icon>
+      <p class="mt-4 text-sm font-medium text-muted">Role Policies</p>
+      <p class="mt-2 text-3xl font-bold text-ink">4</p>
+    </article>
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <lucide-icon [img]="icons.lock" class="h-5 w-5 text-success"></lucide-icon>
+      <p class="mt-4 text-sm font-medium text-muted">Active Users</p>
+      <p class="mt-2 text-3xl font-bold text-ink">{{ users.length }}</p>
+    </article>
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <lucide-icon [img]="icons.shield" class="h-5 w-5 text-warning"></lucide-icon>
+      <p class="mt-4 text-sm font-medium text-muted">Audit Mode</p>
+      <p class="mt-2 text-3xl font-bold text-ink">On</p>
+    </article>
+  </section>
+
+  <section class="grid gap-6 xl:grid-cols-[380px_1fr]">
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <h3 class="text-base font-bold text-ink">Create Access</h3>
+      <div class="mt-5 space-y-4">
+        <label class="block">
+          <span class="mb-1.5 block text-sm font-medium text-ink">Officer Name</span>
+          <input class="h-10 w-full rounded-md border border-line px-3 text-sm outline-none focus:border-gov-500 focus:ring-2 focus:ring-gov-100" [(ngModel)]="newUser.name" placeholder="Enter name" />
+        </label>
+        <label class="block">
+          <span class="mb-1.5 block text-sm font-medium text-ink">Role</span>
+          <select class="h-10 w-full rounded-md border border-line px-3 text-sm outline-none focus:border-gov-500 focus:ring-2 focus:ring-gov-100" [(ngModel)]="newUser.role">
+            <option>Caller</option>
+            <option>Management</option>
+            <option>Super Admin</option>
+          </select>
+        </label>
+        <button class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-gov-700 px-4 text-sm font-semibold text-white hover:bg-gov-900" type="button" (click)="addUser()">
+          <lucide-icon [img]="icons.add" class="h-4 w-4"></lucide-icon>
+          Add User
+        </button>
+      </div>
+    </article>
+
+    <article class="overflow-hidden rounded-md border border-line bg-white shadow-panel">
+      <div class="border-b border-line px-5 py-4">
+        <h3 class="text-base font-bold text-ink">User Access</h3>
+        <p class="mt-1 text-sm text-muted">Local access setup screen ready for auth API integration</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-[720px] w-full text-left">
+          <thead class="bg-slate-50 text-xs font-semibold uppercase text-muted">
+            <tr>
+              <th class="px-5 py-3">Name</th>
+              <th class="px-5 py-3">Role</th>
+              <th class="px-5 py-3">Status</th>
+              <th class="px-5 py-3">Last Login</th>
+              <th class="px-5 py-3 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            @for (user of users; track user.name) {
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-4 font-semibold text-ink">{{ user.name }}</td>
+                <td class="px-5 py-4 text-sm text-muted">{{ user.role }}</td>
+                <td class="px-5 py-4">
+                  <span class="rounded-full px-2.5 py-1 text-xs font-semibold ring-1" [class.bg-emerald-50]="user.status === 'Active'" [class.text-success]="user.status === 'Active'" [class.ring-emerald-200]="user.status === 'Active'" [class.bg-red-50]="user.status === 'Suspended'" [class.text-danger]="user.status === 'Suspended'" [class.ring-red-200]="user.status === 'Suspended'">{{ user.status }}</span>
+                </td>
+                <td class="px-5 py-4 text-sm text-muted">{{ user.lastLogin }}</td>
+                <td class="px-5 py-4 text-right">
+                  <button class="rounded-md border border-line px-3 py-2 text-xs font-semibold text-ink hover:bg-gov-50" type="button" (click)="toggleStatus(user)">
+                    {{ user.status === 'Active' ? 'Suspend' : 'Activate' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+</div>

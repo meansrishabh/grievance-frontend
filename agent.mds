@@ -6,6 +6,12 @@ This is an Angular 21 frontend, not a React runtime. A React/Vite reference UI e
 
 - App shell: `src/app/app.component.*`
 - Routes: `src/app/app.routes.ts`
+- Role session service: `src/app/core/auth/role-session.service.ts`
+- Login / role entry: `src/app/features/login`
+- Citizen status lookup: `src/app/features/citizen`
+- Caller desk: `src/app/features/caller`
+- Management dashboard: `src/app/features/management`
+- Super Admin access UI: `src/app/features/super-admin`
 - Dashboard: `src/app/features/dashboard`
 - Complaint components and API code: `src/app/features/complaints`
 - Shared UI primitives: `src/app/shared/components`
@@ -18,11 +24,23 @@ The frontend talks to the local NestJS backend at `http://localhost:3000`.
 Primary endpoints:
 
 - `GET /complaints`
+- `GET /complaints/:id`
 - `POST /complaints`
 - `PATCH /complaints/:id`
 - `DELETE /complaints/:id`
 
 The Angular service is `src/app/features/complaints/data/complaints.service.ts`. Keep frontend types in `complaint.model.ts` aligned with backend DTOs and entities.
+
+Current backend complaint DTO fields are `citizen`, `mobile`, `department`, `subject`, `ward`, `source`, `priority`, optional `status`, and optional `assignedTo`. Do not send non-whitelisted fields because the NestJS backend uses strict validation. The read model also tolerates legacy records containing `citizenName`, `phone`, or `description`.
+
+## Role Workspaces
+
+- `/login`: Select Citizen, Caller, Management, or Super Admin.
+- `/citizen`: Ticket status lookup using `GET /complaints/:id`.
+- `/caller`: Shows today's IVR complaints and ticket creation counts from complaint data.
+- `/management`: Shows overall ticket metrics and caller performance.
+- `/super-admin`: Frontend-local access management UI until backend auth/access APIs are added.
+- `/admin/dashboard`: Existing complaint operations dashboard.
 
 ## Working Rules
 
@@ -31,3 +49,4 @@ The Angular service is `src/app/features/complaints/data/complaints.service.ts`.
 - Keep Tailwind utility styling consistent with the existing government dashboard UI.
 - Do not edit files inside `Grievance Management System UI` unless intentionally updating the React reference.
 - Run `npm run build` before handing off frontend changes.
+- If the UI appears unchanged, check for stale Angular dev servers on both `4200` and `4201`.

@@ -39,7 +39,13 @@ export class ComplaintFormComponent {
     }
 
     this.complaintCreate.emit({
-      ...this.form.getRawValue(),
+      citizen: this.form.controls.citizen.value,
+      mobile: this.form.controls.mobile.value,
+      department: this.form.controls.department.value,
+      subject: this.form.controls.subject.value,
+      ward: this.form.controls.ward.value,
+      priority: this.form.controls.priority.value,
+      assignedTo: this.form.controls.assignedTo.value,
       source: 'Helpdesk',
       status: 'Pending'
     });

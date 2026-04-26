@@ -13,21 +13,28 @@ export interface Complaint {
   priority: ComplaintPriority;
   status: ComplaintStatus;
   createdAt: string;
+  createdAtIso: string;
   assignedTo: string;
+  recordingUrl?: string;
 }
 
 export interface BackendComplaint {
-  complaintId: string;
-  citizen: string;
-  mobile: string;
-  department: string;
-  subject: string;
-  ward: string;
-  source: ComplaintSource;
-  priority: ComplaintPriority;
-  status: ComplaintStatus;
-  createdAt: string;
-  assignedTo: string;
+  _id?: string;
+  complaintId?: string;
+  citizen?: string;
+  citizenName?: string;
+  mobile?: string;
+  phone?: string;
+  department?: string;
+  subject?: string;
+  description?: string;
+  ward?: string;
+  source?: ComplaintSource;
+  priority?: ComplaintPriority;
+  status?: ComplaintStatus;
+  createdAt?: string;
+  assignedTo?: string;
+  recordingUrl?: string;
 }
 
 export interface CreateComplaintPayload {

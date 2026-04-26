@@ -12,6 +12,7 @@ import { Complaint, ComplaintStatus } from '../../data/complaint.model';
 export class ComplaintTableComponent {
   @Input({ required: true }) complaints: Complaint[] = [];
   @Input() isLoading = false;
+  @Input() updatingComplaintId = '';
   @Output() statusChange = new EventEmitter<{ id: string; status: ComplaintStatus }>();
 
   readonly icons = {
@@ -23,6 +24,11 @@ export class ComplaintTableComponent {
   readonly statuses: ComplaintStatus[] = ['Pending', 'In Progress', 'Resolved'];
 
   updateStatus(id: string, value: string): void {
+    const complaint = this.complaints.find((item) => item.id === id);
+    if (complaint?.status === value || this.updatingComplaintId === id) {
+      return;
+    }
+
     this.statusChange.emit({ id, status: value as ComplaintStatus });
   }
 }

@@ -5,8 +5,8 @@
         <lucide-icon [img]="icons.menu" class="h-5 w-5"></lucide-icon>
       </button>
       <div class="min-w-0">
-        <p class="text-sm font-medium text-muted">Admin Console</p>
-        <h2 class="truncate text-xl font-bold text-ink sm:text-2xl">Grievance Dashboard</h2>
+        <p class="text-sm font-medium text-muted">{{ profile?.label || 'Grievance Portal' }}</p>
+        <h2 class="truncate text-xl font-bold text-ink sm:text-2xl">Grievance Management System</h2>
       </div>
     </div>
 
@@ -18,18 +18,21 @@
     <div class="flex items-center gap-2">
       <button class="hidden h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-sm font-medium text-muted sm:flex">
         <lucide-icon [img]="icons.calendar" class="h-4 w-4"></lucide-icon>
-        25 Apr 2026
+        {{ today | date: 'dd MMM yyyy' }}
       </button>
       <button class="flex h-10 w-10 items-center justify-center rounded-md border border-line bg-white text-muted">
         <lucide-icon [img]="icons.bell" class="h-5 w-5"></lucide-icon>
       </button>
       <div class="flex items-center gap-3 rounded-md border border-line bg-white py-1.5 pl-2 pr-3">
-        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-gov-700 text-sm font-bold text-white">AD</div>
+        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-gov-700 text-sm font-bold text-white">{{ profile?.initials || 'GP' }}</div>
         <div class="hidden sm:block">
-          <p class="text-sm font-semibold text-ink">Admin Desk</p>
-          <p class="text-xs text-muted">State Nodal Officer</p>
+          <p class="text-sm font-semibold text-ink">{{ profile?.label || 'Portal User' }}</p>
+          <p class="text-xs text-muted">Role workspace</p>
         </div>
       </div>
+      <button class="flex h-10 w-10 items-center justify-center rounded-md border border-line bg-white text-muted hover:bg-red-50 hover:text-danger" type="button" title="Logout" (click)="logout()">
+        <lucide-icon [img]="icons.logout" class="h-5 w-5"></lucide-icon>
+      </button>
     </div>
   </div>
 </header>

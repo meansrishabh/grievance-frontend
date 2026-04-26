@@ -1,10 +1,14 @@
-<div class="min-h-screen bg-surface">
-  <app-sidebar></app-sidebar>
+@if (isLoginRoute) {
+  <router-outlet></router-outlet>
+} @else {
+  <div class="min-h-screen bg-surface">
+    <app-sidebar></app-sidebar>
 
-  <div class="min-h-screen lg:pl-72">
-    <app-header></app-header>
-    <main class="px-4 py-5 sm:px-6 lg:px-8">
-      <router-outlet></router-outlet>
-    </main>
+    <div class="min-h-screen lg:pl-72">
+      <app-header></app-header>
+      <main class="px-4 py-5 sm:px-6 lg:px-8">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
   </div>
-</div>
+}

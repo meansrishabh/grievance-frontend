@@ -1,4 +1,21 @@
 <div class="space-y-6">
+  <section class="rounded-md border border-gov-100 bg-white px-5 py-4 shadow-panel">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-gov-700">Connected Backend</p>
+        <h2 class="mt-1 text-xl font-bold text-ink">NestJS Complaints API</h2>
+        <p class="mt-1 text-sm text-muted">Using GET, POST, PATCH at http://localhost:3000/complaints with strict DTO fields.</p>
+      </div>
+      <button
+        class="inline-flex h-10 items-center justify-center rounded-md bg-gov-700 px-4 text-sm font-semibold text-white transition hover:bg-gov-900"
+        type="button"
+        (click)="loadComplaints()"
+      >
+        Refresh Data
+      </button>
+    </div>
+  </section>
+
   <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
     @for (stat of stats; track stat.label) {
       <article class="rounded-md border border-line bg-white p-5 shadow-panel">
@@ -40,6 +57,7 @@
       <app-complaint-table
         [complaints]="complaints"
         [isLoading]="isLoading"
+        [updatingComplaintId]="updatingComplaintId"
         (statusChange)="updateStatus($event)"
       ></app-complaint-table>
     </div>

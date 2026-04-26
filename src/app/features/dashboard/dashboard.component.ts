@@ -5,7 +5,7 @@ import {
   Clock3,
   FileText,
   LucideAngularModule,
-  PhoneCall,
+  RefreshCw,
   TrendingUp
 } from 'lucide-angular';
 import { ComplaintFiltersComponent } from '../complaints/components/complaint-filters/complaint-filters.component';
@@ -31,6 +31,7 @@ export class DashboardComponent implements OnInit {
   filters: ComplaintFilters = {};
   isLoading = false;
   isSaving = false;
+  updatingComplaintId = '';
   errorMessage = '';
   successMessage = '';
 
@@ -41,36 +42,35 @@ export class DashboardComponent implements OnInit {
     const pending = this.complaints.filter((complaint) => complaint.status === 'Pending').length;
     const inProgress = this.complaints.filter((complaint) => complaint.status === 'In Progress').length;
     const resolved = this.complaints.filter((complaint) => complaint.status === 'Resolved').length;
-    const ivr = this.complaints.filter((complaint) => complaint.source === 'IVR').length;
 
     return [
       {
-      label: 'Total Complaints',
-      value: total.toString(),
-      delta: `${pending} pending`,
-      icon: FileText,
-      color: 'bg-gov-50 text-gov-700'
+        label: 'Total Complaints',
+        value: total.toString(),
+        delta: `${pending} pending`,
+        icon: FileText,
+        color: 'bg-gov-50 text-gov-700'
       },
       {
-      label: 'Pending Review',
-      value: pending.toString(),
-      delta: `${inProgress} active`,
-      icon: Clock3,
-      color: 'bg-amber-50 text-warning'
+        label: 'Pending',
+        value: pending.toString(),
+        delta: 'awaiting officer review',
+        icon: Clock3,
+        color: 'bg-amber-50 text-warning'
       },
       {
-      label: 'Resolved',
-      value: resolved.toString(),
-      delta: total ? `${Math.round((resolved / total) * 100)}% closure` : '0% closure',
-      icon: CheckCircle2,
-      color: 'bg-emerald-50 text-success'
+        label: 'In Progress',
+        value: inProgress.toString(),
+        delta: 'active field action',
+        icon: RefreshCw,
+        color: 'bg-blue-50 text-gov-700'
       },
       {
-      label: 'IVR Complaints',
-      value: ivr.toString(),
-      delta: 'from voice channel',
-      icon: PhoneCall,
-      color: 'bg-indigo-50 text-indigo-700'
+        label: 'Resolved',
+        value: resolved.toString(),
+        delta: total ? `${Math.round((resolved / total) * 100)}% closure` : '0% closure',
+        icon: CheckCircle2,
+        color: 'bg-emerald-50 text-success'
       }
     ];
   }
@@ -118,14 +118,18 @@ export class DashboardComponent implements OnInit {
 
   updateStatus(event: { id: string; status: ComplaintStatus }): void {
     this.errorMessage = '';
+    this.successMessage = '';
+    this.updatingComplaintId = event.id;
 
     this.complaintsService.updateStatus(event.id, event.status).subscribe({
       next: (updated) => {
         this.complaints = this.complaints.map((complaint) => (complaint.id === updated.id ? updated : complaint));
         this.successMessage = `Complaint ${updated.id} moved to ${updated.status}.`;
+        this.updatingComplaintId = '';
       },
       error: () => {
         this.errorMessage = 'Unable to update complaint status.';
+        this.updatingComplaintId = '';
       }
     });
   }

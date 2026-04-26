@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './core/components/header/header.component';
 import { SidebarComponent } from './core/components/sidebar/sidebar.component';
 
@@ -9,4 +9,10 @@ import { SidebarComponent } from './core/components/sidebar/sidebar.component';
   imports: [RouterOutlet, SidebarComponent, HeaderComponent],
   templateUrl: './app.component.html'
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor(private readonly router: Router) {}
+
+  get isLoginRoute(): boolean {
+    return this.router.url.startsWith('/login') || this.router.url === '/';
+  }
+}

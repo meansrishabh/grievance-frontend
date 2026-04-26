@@ -1,0 +1,91 @@
+<div class="space-y-6">
+  <section class="rounded-md border border-line bg-white p-6 shadow-panel">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-wide text-gov-700">Management Console</p>
+        <h2 class="mt-2 text-3xl font-bold text-ink">Overall ticket operations</h2>
+        <p class="mt-2 text-sm text-muted">Service delivery, ticket status, and caller desk performance from the backend.</p>
+      </div>
+      <button class="h-10 rounded-md bg-gov-700 px-4 text-sm font-semibold text-white hover:bg-gov-900" type="button" (click)="load()">Refresh</button>
+    </div>
+  </section>
+
+  @if (errorMessage) {
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-danger">{{ errorMessage }}</div>
+  }
+
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <lucide-icon [img]="icons.ticket" class="h-5 w-5 text-gov-700"></lucide-icon>
+      <p class="mt-4 text-sm font-medium text-muted">Total Tickets</p>
+      <p class="mt-2 text-3xl font-bold text-ink">{{ total }}</p>
+    </article>
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <lucide-icon [img]="icons.pending" class="h-5 w-5 text-warning"></lucide-icon>
+      <p class="mt-4 text-sm font-medium text-muted">Pending</p>
+      <p class="mt-2 text-3xl font-bold text-ink">{{ pending }}</p>
+    </article>
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <lucide-icon [img]="icons.chart" class="h-5 w-5 text-gov-700"></lucide-icon>
+      <p class="mt-4 text-sm font-medium text-muted">In Progress</p>
+      <p class="mt-2 text-3xl font-bold text-ink">{{ inProgress }}</p>
+    </article>
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <lucide-icon [img]="icons.resolved" class="h-5 w-5 text-success"></lucide-icon>
+      <p class="mt-4 text-sm font-medium text-muted">Resolved</p>
+      <p class="mt-2 text-3xl font-bold text-ink">{{ resolved }}</p>
+    </article>
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <lucide-icon [img]="icons.call" class="h-5 w-5 text-gov-700"></lucide-icon>
+      <p class="mt-4 text-sm font-medium text-muted">IVR Tickets</p>
+      <p class="mt-2 text-3xl font-bold text-ink">{{ ivrTickets }}</p>
+    </article>
+  </section>
+
+  <section class="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+    <article class="rounded-md border border-line bg-white p-5 shadow-panel">
+      <h3 class="text-base font-bold text-ink">Ticket Mix</h3>
+      <div class="mt-5 space-y-4">
+        <div>
+          <div class="mb-1 flex justify-between text-sm"><span>Pending</span><span>{{ pending }}</span></div>
+          <div class="h-3 rounded-full bg-slate-100"><div class="h-3 rounded-full bg-amber-500" [style.width.%]="total ? (pending / total) * 100 : 0"></div></div>
+        </div>
+        <div>
+          <div class="mb-1 flex justify-between text-sm"><span>In Progress</span><span>{{ inProgress }}</span></div>
+          <div class="h-3 rounded-full bg-slate-100"><div class="h-3 rounded-full bg-gov-600" [style.width.%]="total ? (inProgress / total) * 100 : 0"></div></div>
+        </div>
+        <div>
+          <div class="mb-1 flex justify-between text-sm"><span>Resolved</span><span>{{ resolved }}</span></div>
+          <div class="h-3 rounded-full bg-slate-100"><div class="h-3 rounded-full bg-emerald-600" [style.width.%]="total ? (resolved / total) * 100 : 0"></div></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="rounded-md border border-line bg-white shadow-panel">
+      <div class="border-b border-line px-5 py-4">
+        <h3 class="text-base font-bold text-ink">Caller Performance</h3>
+        <p class="mt-1 text-sm text-muted">Grouped by assigned caller/officer</p>
+      </div>
+      <div class="divide-y divide-line">
+        @if (isLoading) {
+          <div class="px-5 py-8 text-center text-sm font-medium text-muted">Loading performance...</div>
+        }
+        @if (!isLoading && callerPerformance.length === 0) {
+          <div class="px-5 py-8 text-center text-sm font-medium text-muted">No caller performance records yet.</div>
+        }
+        @for (caller of callerPerformance; track caller.name) {
+          <div class="grid grid-cols-[1fr_auto] gap-4 px-5 py-4">
+            <div>
+              <p class="font-semibold text-ink">{{ caller.name }}</p>
+              <p class="mt-1 text-sm text-muted">{{ caller.resolved }} resolved | {{ caller.pending }} pending</p>
+            </div>
+            <div class="text-right">
+              <p class="text-2xl font-bold text-gov-700">{{ caller.created }}</p>
+              <p class="text-xs font-semibold uppercase text-muted">tickets</p>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+  </section>
+</div>
