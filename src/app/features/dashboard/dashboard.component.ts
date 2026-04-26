@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass } from '@angular/common';
 import {
   CheckCircle2,
@@ -27,6 +28,8 @@ import { ComplaintsService } from '../complaints/data/complaints.service';
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   complaints: Complaint[] = [];
   filters: ComplaintFilters = {};
   isLoading = false;
@@ -78,15 +81,29 @@ export class DashboardComponent implements OnInit {
   constructor(private readonly complaintsService: ComplaintsService) {}
 
   ngOnInit(): void {
-    this.loadComplaints();
+    this.complaintsService.complaints$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((complaints) => {
+      if (complaints.length > 0 && !this.hasActiveFilters()) {
+        this.complaints = complaints;
+        this.isLoading = false;
+      }
+    });
+
+    const cachedComplaints = this.complaintsService.cachedComplaints;
+    if (cachedComplaints.length > 0) {
+      this.complaints = cachedComplaints;
+    }
+
+    this.loadComplaints(this.filters, false);
   }
 
-  loadComplaints(filters: ComplaintFilters = this.filters): void {
+  loadComplaints(filters: ComplaintFilters = this.filters, force = true): void {
     this.filters = filters;
-    this.isLoading = true;
+    this.isLoading = this.complaints.length === 0;
     this.errorMessage = '';
 
-    this.complaintsService.findAll(filters).subscribe({
+    const request = this.hasActiveFilters() ? this.complaintsService.findAll(filters) : this.complaintsService.ensureAllLoaded(force);
+
+    request.subscribe({
       next: (complaints) => {
         this.complaints = complaints;
         this.isLoading = false;
@@ -96,6 +113,10 @@ export class DashboardComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  private hasActiveFilters(): boolean {
+    return Boolean(this.filters.status || this.filters.department || this.filters.fromDate || this.filters.search);
   }
 
   createComplaint(payload: CreateComplaintPayload): void {

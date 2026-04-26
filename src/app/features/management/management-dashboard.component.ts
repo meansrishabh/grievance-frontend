@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BarChart3, CheckCircle2, Clock3, LucideAngularModule, PhoneCall, Ticket } from 'lucide-angular';
 import { Complaint } from '../complaints/data/complaint.model';
 import { ComplaintsService } from '../complaints/data/complaints.service';
@@ -17,6 +18,8 @@ interface CallerPerformance {
   templateUrl: './management-dashboard.component.html'
 })
 export class ManagementDashboardComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   complaints: Complaint[] = [];
   isLoading = false;
   errorMessage = '';
@@ -32,6 +35,13 @@ export class ManagementDashboardComponent implements OnInit {
   constructor(private readonly complaintsService: ComplaintsService) {}
 
   ngOnInit(): void {
+    this.complaintsService.complaints$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((complaints) => {
+      if (complaints.length > 0) {
+        this.complaints = complaints;
+        this.isLoading = false;
+      }
+    });
+
     this.load();
   }
 
@@ -72,11 +82,11 @@ export class ManagementDashboardComponent implements OnInit {
     return Array.from(grouped.values()).sort((a, b) => b.created - a.created);
   }
 
-  load(): void {
-    this.isLoading = true;
+  load(force = false): void {
+    this.isLoading = this.complaints.length === 0;
     this.errorMessage = '';
 
-    this.complaintsService.findAll({}).subscribe({
+    this.complaintsService.ensureAllLoaded(force).subscribe({
       next: (complaints) => {
         this.complaints = complaints;
         this.isLoading = false;

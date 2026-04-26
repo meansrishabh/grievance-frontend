@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { Headphones, LucideAngularModule, PhoneIncoming, TicketCheck } from 'lucide-angular';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
@@ -12,6 +13,8 @@ import { ComplaintsService } from '../complaints/data/complaints.service';
   templateUrl: './caller-dashboard.component.html'
 })
 export class CallerDashboardComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   complaints: Complaint[] = [];
   isLoading = false;
   errorMessage = '';
@@ -26,6 +29,13 @@ export class CallerDashboardComponent implements OnInit {
   constructor(private readonly complaintsService: ComplaintsService) {}
 
   ngOnInit(): void {
+    this.complaintsService.complaints$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((complaints) => {
+      if (complaints.length > 0) {
+        this.complaints = complaints;
+        this.isLoading = false;
+      }
+    });
+
     this.loadCalls();
   }
 
@@ -41,11 +51,11 @@ export class CallerDashboardComponent implements OnInit {
     return this.todayCalls.filter((complaint) => complaint.status === 'Pending').length;
   }
 
-  loadCalls(): void {
-    this.isLoading = true;
+  loadCalls(force = false): void {
+    this.isLoading = this.complaints.length === 0;
     this.errorMessage = '';
 
-    this.complaintsService.findAll({}).subscribe({
+    this.complaintsService.ensureAllLoaded(force).subscribe({
       next: (complaints) => {
         this.complaints = complaints;
         this.isLoading = false;

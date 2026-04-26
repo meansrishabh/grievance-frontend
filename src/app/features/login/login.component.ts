@@ -8,6 +8,7 @@ import {
   UsersRound
 } from 'lucide-angular';
 import { RoleSessionService, UserRole } from '../../core/auth/role-session.service';
+import { ComplaintsService } from '../complaints/data/complaints.service';
 
 interface LoginRole {
   role: UserRole;
@@ -57,9 +58,18 @@ export class LoginComponent {
     }
   ];
 
-  constructor(private readonly session: RoleSessionService) {}
+  constructor(
+    private readonly complaintsService: ComplaintsService,
+    private readonly session: RoleSessionService
+  ) {}
 
   login(role: UserRole): void {
+    if (role !== 'citizen') {
+      this.complaintsService.ensureAllLoaded().subscribe({
+        error: () => undefined
+      });
+    }
+
     this.session.login(role);
   }
 }

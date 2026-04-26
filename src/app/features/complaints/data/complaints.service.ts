@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { BehaviorSubject, finalize, map, Observable, of, shareReplay, tap } from 'rxjs';
 import {
   BackendComplaint,
   Complaint,
@@ -12,8 +12,36 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ComplaintsService {
   private readonly apiUrl = 'http://localhost:3000/complaints';
+  private readonly complaintsSubject = new BehaviorSubject<Complaint[]>([]);
+  private complaintsCache: Complaint[] = [];
+  private loadAllRequest?: Observable<Complaint[]>;
+
+  readonly complaints$ = this.complaintsSubject.asObservable();
 
   constructor(private readonly http: HttpClient) {}
+
+  get cachedComplaints(): Complaint[] {
+    return this.complaintsCache;
+  }
+
+  ensureAllLoaded(force = false): Observable<Complaint[]> {
+    if (!force && this.complaintsCache.length > 0) {
+      return of(this.complaintsCache);
+    }
+
+    if (!force && this.loadAllRequest) {
+      return this.loadAllRequest;
+    }
+
+    this.loadAllRequest = this.findAll({}).pipe(
+      finalize(() => {
+        this.loadAllRequest = undefined;
+      }),
+      shareReplay(1)
+    );
+
+    return this.loadAllRequest;
+  }
 
   findAll(filters: ComplaintFilters = {}): Observable<Complaint[]> {
     let params = new HttpParams();
@@ -34,7 +62,12 @@ export class ComplaintsService {
 
     return this.http.get<BackendComplaint[]>(this.apiUrl, { params }).pipe(
       map((complaints) => complaints.filter((complaint) => this.isOnOrAfter(complaint.createdAt, filters.fromDate))),
-      map((complaints) => complaints.map((complaint) => this.toComplaint(complaint)))
+      map((complaints) => complaints.map((complaint) => this.toComplaint(complaint))),
+      tap((complaints) => {
+        if (!filters.status && !filters.department && !filters.fromDate && !filters.search) {
+          this.setComplaintCache(complaints);
+        }
+      })
     );
   }
 
@@ -43,11 +76,26 @@ export class ComplaintsService {
   }
 
   create(payload: CreateComplaintPayload): Observable<Complaint> {
-    return this.http.post<BackendComplaint>(this.apiUrl, payload).pipe(map((complaint) => this.toComplaint(complaint)));
+    return this.http.post<BackendComplaint>(this.apiUrl, payload).pipe(
+      map((complaint) => this.toComplaint(complaint)),
+      tap((complaint) => {
+        this.setComplaintCache([complaint, ...this.complaintsCache]);
+      })
+    );
   }
 
   updateStatus(id: string, status: ComplaintStatus): Observable<Complaint> {
-    return this.http.patch<BackendComplaint>(`${this.apiUrl}/${id}`, { status }).pipe(map((complaint) => this.toComplaint(complaint)));
+    return this.http.patch<BackendComplaint>(`${this.apiUrl}/${id}`, { status }).pipe(
+      map((complaint) => this.toComplaint(complaint)),
+      tap((updated) => {
+        this.setComplaintCache(this.complaintsCache.map((complaint) => (complaint.id === updated.id ? updated : complaint)));
+      })
+    );
+  }
+
+  private setComplaintCache(complaints: Complaint[]): void {
+    this.complaintsCache = complaints;
+    this.complaintsSubject.next(complaints);
   }
 
   private toComplaint(complaint: BackendComplaint): Complaint {
